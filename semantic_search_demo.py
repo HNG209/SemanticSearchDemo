@@ -1,5 +1,6 @@
 import os
 import hashlib
+import torch
 import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -17,6 +18,8 @@ DIM = 512  # CLIP ViT-B-16 embedding size
 TOP_K = 8
 PAGE_SIZE_DEFAULT = 50
 
+print(torch.cuda.get_device_name(0))
+print('CUDA available:', torch.cuda.is_available())  # True nếu GPU sẵn sàng
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
 # ===================== MILVUS CONNECT =====================
@@ -49,7 +52,7 @@ def init_collection():
 
 # ===================== MODEL (CLIP) =====================
 # Use CPU to avoid GPU driver issues; trust_remote_code to avoid meta tensor lazy-load quirks
-model = SentenceTransformer('clip-ViT-B-16', device="cpu", trust_remote_code=True)
+model = SentenceTransformer('clip-ViT-B-16', device="cuda", trust_remote_code=True)
 
 
 # ===================== BACKEND HELPERS =====================
@@ -132,7 +135,7 @@ def delete_row(pk_value: str):
 
 # ===================== UI (TKINTER) =====================
 root = tk.Tk()
-root.title("Milvus Image Search (Tkinter)")
+root.title("Semantic Search Demo")
 root.geometry("980x700")
 
 style = ttk.Style()

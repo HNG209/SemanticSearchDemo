@@ -4,15 +4,17 @@ import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
+from dotenv import load_dotenv
 
-import pinecone
 from pinecone import Pinecone
 from sentence_transformers import SentenceTransformer
 
 # ===================== CONFIG =====================
-PINECONE_API_KEY = "pcsk_4277or_KnoLJfyChRyDXZSdQU3i7sqcbcv4NQwdHvHaCvs93e5kGGpaSHKpzERmp9YrCM1"
-PINECONE_ENV = "us-west1-gcp"
-INDEX_NAME = "image-index"
+load_dotenv()
+
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_ENV = os.getenv("PINECONE_ENV")
+INDEX_NAME = os.getenv("INDEX_NAME")
 
 IMAGES_DIR = "images"
 # DIM = 512  # CLIP ViT-B-16 embedding size
@@ -27,9 +29,6 @@ index = pc.Index(INDEX_NAME)
 # ===================== MODEL (CLIP) =====================
 # Use CPU to avoid GPU driver issues; trust_remote_code to avoid meta tensor lazy-load quirks
 model = SentenceTransformer('clip-ViT-B-16', device="cuda", trust_remote_code=True)
-
-
-# ===================== BACKEND HELPERS =====================
 
 def hash_pk(filename: str) -> str:
     return hashlib.md5(filename.encode()).hexdigest()
